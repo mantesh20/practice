@@ -1,0 +1,9 @@
+FROM nginx:alpine
+
+# Copy calculator files
+COPY calculator.html /usr/share/nginx/html/calculator.html
+COPY calculator.css /usr/share/nginx/html/calculator.css
+COPY calculator.js /usr/share/nginx/html/calculator.js
+
+# Create a default page that shows both apps
+RUN echo '<!DOCTYPE html><html><head><title>App Dashboard</title><style>body{font-family:Arial,sans-serif;margin:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:white}.container{max-width:800px;margin:0 auto}.app{background:rgba(255,255,255,0.1);margin:20px 0;padding:30px;border-radius:15px;backdrop-filter:blur(10px)}.app h2{margin-top:0}.app a{display:inline-block;background:#e74c3c;color:white;padding:15px 30px;text-decoration:none;border-radius:8px;margin:10px 0;transition:0.3s}.app a:hover{background:#c0392b;transform:scale(1.05)}</style></head><body><div class="container"><h1>🚀 Application Dashboard</h1><div class="app"><h2>📋 Registration Form</h2><p>Modern registration form with validation and beautiful UI.</p><a href="/cicd.html">Open Registration Form</a></div><div class="app"><h2>🧮 Calculator</h2><p>Advanced calculator with modern design and keyboard support.</p><a href="/calculator.html">Open Calculator</a></div></div></body></html>' > /usr/share/nginx/html/index.html
