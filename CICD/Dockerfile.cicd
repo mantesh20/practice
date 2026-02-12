@@ -1,0 +1,7 @@
+FROM nginx:alpine
+
+# Copy CICD files (registration form)
+COPY index.html /usr/share/nginx/html/index.html
+
+# Create a default page for CICD container
+RUN echo '<!DOCTYPE html><html><head><title>CICD App</title></head><body><h1>CICD Registration Form</h1><p><a href="/index.html">Go to Registration Form</a></p></body></html>' > /usr/share/nginx/html/cicd.html
