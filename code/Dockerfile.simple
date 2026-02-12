@@ -1,0 +1,6 @@
+FROM nginx:alpine
+
+# Copy only calculator files
+COPY calculator.html /usr/share/nginx/html/index.html
+COPY calculator.css /usr/share/nginx/html/calculator.css
+COPY calculator.js /usr/share/nginx/html/calculator.js
