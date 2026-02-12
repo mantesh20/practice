@@ -15,12 +15,12 @@ fi
 echo "Deploying to EC2 instance: $EC2_IP"
 
 # Copy files to EC2
-scp -i $KEY_FILE -r CICD/ $USER@$EC2_IP:/home/ubuntu/
+scp -i $KEY_FILE -r code/ $USER@$EC2_IP:/home/ubuntu/
 
 # Deploy on EC2
 ssh -i $KEY_FILE $USER@$EC2_IP << 'EOF'
-cd /home/ubuntu/CICD
-docker build -t my-app .
+cd /home/ubuntu/code
+docker build -f Dockerfile.calculator -t my-app .
 docker stop my-app-container || true
 docker rm my-app-container || true
 docker run -d --name my-app-container -p 80:80 my-app

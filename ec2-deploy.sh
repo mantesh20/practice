@@ -8,7 +8,7 @@ echo "Starting deployment..."
 cd /home/ubuntu
 
 # Clone the repository
-git clone https://github.com/mantesh20/mantesh.git app || (cd app && git pull origin main)
+git clone https://github.com/mantesh20/practice.git app || (cd app && git pull origin main)
 
 # Navigate to the CICD directory
 cd app/CICD
