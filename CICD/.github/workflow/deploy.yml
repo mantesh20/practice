@@ -20,5 +20,11 @@ jobs:
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          cd ~/deploy
-          ./deploy.sh
+          cd /home/ubuntu
+          git clone https://github.com/mantesh20/new-repo.git app || (cd app && git pull origin main)
+          cd app/CICD
+          docker build -t my-app .
+          docker stop my-app-container || true
+          docker rm my-app-container || true
+          docker run -d --name my-app-container -p 80:80 my-app
+          echo "Deployment completed successfully!"
