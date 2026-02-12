@@ -4,7 +4,7 @@
 cd /home/ubuntu
 
 # Pull the latest code (using token for authentication)
-git clone https://github.com/mantesh20/new-repo.git app || (cd app && git pull origin main)
+git clone https://github.com/mantesh20/mantesh.git app || (cd app && git pull origin main)
 
 # Build and run the Docker container
 cd app
