@@ -1,10 +1,9 @@
 FROM nginx:alpine
 
-# Copy the calculator files
+# Copy calculator files
 COPY calculator.html /usr/share/nginx/html/calculator.html
 COPY calculator.css /usr/share/nginx/html/calculator.css
 COPY calculator.js /usr/share/nginx/html/calculator.js
-COPY index.html /usr/share/nginx/html/index.html
 
 # Create a default page that redirects to calculator
 RUN echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=/calculator.html"></head><body><p>Redirecting to Calculator...</p></body></html>' > /usr/share/nginx/html/index.html
