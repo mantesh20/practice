@@ -10,8 +10,8 @@ cd /home/ubuntu
 # Clone the repository
 git clone https://github.com/mantesh20/practice.git app || (cd app && git pull origin main)
 
-# Navigate to the CICD directory
-cd app/CICD
+# Navigate to the code directory
+cd app/code
 
 # Build and run the Docker container
 docker build -f Dockerfile.calculator -t my-app .
