@@ -6,6 +6,9 @@ echo "🚀 Starting Manual Deployment..."
 # Navigate to home directory
 cd /home/ubuntu
 
+# Copy code from local machine to EC2 instance
+scp -i Manteshkeypair.pem -r code/ $USER@$EC2_IP:/home/ubuntu/
+
 # Clone or update repository
 git clone https://github.com/mantesh20/practice.git app || (cd app && git pull origin main)
 

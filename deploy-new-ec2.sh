@@ -2,6 +2,7 @@
 
 # Deploy to New EC2 Instance - Run this directly on EC2
 echo "🚀 Deploying to New EC2 Instance..."
+KEY_FILE="Manteshkeypair.pem"
 
 # Navigate to home directory
 cd /home/ubuntu
