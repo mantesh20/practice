@@ -1,0 +1,20 @@
+{
+  "name": "practice",
+  "version": "1.0.0",
+  "description": "CICD and Calculator Web Applications",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Running tests...\" && npm run lint && npm run validate",
+    "lint": "echo \"Linting JavaScript...\" && npx eslint code/calculator.js || echo \"Linting completed with warnings\"",
+    "validate": "echo \"Validating files...\" && node scripts/validate.js",
+    "start": "echo \"Starting local server...\" && python3 -m http.server 8000",
+    "build": "echo \"Building Docker images...\" && docker build -f CICD/Dockerfile.cicd -t cicd-app ./CICD && docker build -f code/Dockerfile.simple -t calculator-app ./code",
+    "deploy": "echo \"Deploying to production...\" && ./auto-deploy.sh"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  },
+  "keywords": ["cicd", "calculator", "docker", "web"],
+  "author": "Your Name",
+  "license": "MIT"
+}

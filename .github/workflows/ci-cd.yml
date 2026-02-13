@@ -1,0 +1,133 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: |
+        cd code
+        npm init -y
+        npm install --save-dev eslint
+        
+    - name: Lint JavaScript
+      run: |
+        cd code
+        npx eslint calculator.js || true
+        
+    - name: Test HTML
+      run: |
+        cd code
+        if [ -f calculator.html ]; then
+          echo "✅ calculator.html exists"
+        else
+          echo "❌ calculator.html missing"
+          exit 1
+        fi
+        
+    - name: Test CSS
+      run: |
+        cd code
+        if [ -f calculator.css ]; then
+          echo "✅ calculator.css exists"
+        else
+          echo "❌ calculator.css missing"
+          exit 1
+        fi
+        
+    - name: Test CICD files
+      run: |
+        cd CICD
+        if [ -f index.html ]; then
+          echo "✅ CICD index.html exists"
+        else
+          echo "❌ CICD index.html missing"
+          exit 1
+        fi
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        
+    - name: Build and push CICD image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./CICD
+        file: ./CICD/Dockerfile.cicd
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/cicd-app:latest
+        
+    - name: Build and push Calculator image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./code
+        file: ./code/Dockerfile.simple
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/calculator-app:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          # Install Docker if not installed
+          if ! command -v docker &> /dev/null; then
+            echo "Installing Docker..."
+            sudo apt update
+            sudo apt install -y docker.io
+            sudo usermod -aG docker ubuntu
+          fi
+          
+          # Pull latest images
+          docker pull ${{ secrets.DOCKER_USERNAME }}/cicd-app:latest
+          docker pull ${{ secrets.DOCKER_USERNAME }}/calculator-app:latest
+          
+          # Stop existing containers
+          docker stop cicd-container calculator-container || true
+          docker rm cicd-container calculator-container || true
+          
+          # Run new containers
+          docker run -d --name cicd-container -p 80:80 ${{ secrets.DOCKER_USERNAME }}/cicd-app:latest
+          docker run -d --name calculator-container -p 3000:80 ${{ secrets.DOCKER_USERNAME }}/calculator-app:latest
+          
+          echo "✅ Deployment completed!"
+          echo "📋 Registration Form: http://$(curl -s ifconfig.me):80"
+          echo "🧮 Calculator: http://$(curl -s ifconfig.me):3000"
+          docker ps --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}"
